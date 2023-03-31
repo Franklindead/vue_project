@@ -1,116 +1,184 @@
 <template>
-	<div class="container">
-		<el-tabs v-model="message">
-			<el-tab-pane :label="`未读消息(${state.unread.length})`" name="first">
-				<el-table :data="state.unread" :show-header="false" style="width: 100%">
-					<el-table-column>
-						<template #default="scope">
-							<span class="message-title">{{ scope.row.title }}</span>
-						</template>
-					</el-table-column>
-					<el-table-column prop="date" width="180"></el-table-column>
-					<el-table-column width="120">
-						<template #default="scope">
-							<el-button size="small" @click="handleRead(scope.$index)">标为已读</el-button>
-						</template>
-					</el-table-column>
-				</el-table>
-				<div class="handle-row">
-					<el-button type="primary">全部标为已读</el-button>
-				</div>
-			</el-tab-pane>
-			<el-tab-pane :label="`已读消息(${state.read.length})`" name="second">
-				<template v-if="message === 'second'">
-					<el-table :data="state.read" :show-header="false" style="width: 100%">
-						<el-table-column>
-							<template #default="scope">
-								<span class="message-title">{{ scope.row.title }}</span>
-							</template>
-						</el-table-column>
-						<el-table-column prop="date" width="150"></el-table-column>
-						<el-table-column width="120">
-							<template #default="scope">
-								<el-button type="danger" @click="handleDel(scope.$index)">删除</el-button>
-							</template>
-						</el-table-column>
-					</el-table>
-					<div class="handle-row">
-						<el-button type="danger">删除全部</el-button>
-					</div>
-				</template>
-			</el-tab-pane>
-			<el-tab-pane :label="`回收站(${state.recycle.length})`" name="third">
-				<template v-if="message === 'third'">
-					<el-table :data="state.recycle" :show-header="false" style="width: 100%">
-						<el-table-column>
-							<template #default="scope">
-								<span class="message-title">{{ scope.row.title }}</span>
-							</template>
-						</el-table-column>
-						<el-table-column prop="date" width="150"></el-table-column>
-						<el-table-column width="120">
-							<template #default="scope">
-								<el-button @click="handleRestore(scope.$index)">还原</el-button>
-							</template>
-						</el-table-column>
-					</el-table>
-					<div class="handle-row">
-						<el-button type="danger">清空回收站</el-button>
-					</div>
-				</template>
-			</el-tab-pane>
-		</el-tabs>
-	</div>
+  <div class="container">
+    <el-tabs v-model="message">
+      <el-tab-pane :label="`留言(${state.message.length})`" name="first">
+        <el-alert
+          title="温馨提示，下拉可查看回复，敲击回车即回复结束"
+          type="success"
+          effect="light"
+        ></el-alert>
+
+        <el-table
+          :row-key="(row:any) => row.id"
+          :expand-row-keys="expandedRowKeys"
+          :data="state.message"
+          :show-header="false"
+          style="width: 100%"
+          empty-text="暂无留言"
+          fit
+          @expand-change="expandOpen"
+        >
+          <el-table-column type="expand" :min-height="100">
+            <template #default="{ row }">
+              <div class="message-detail">
+                <el-input
+                  type="textarea"
+                  v-model="row.reply"
+                  @keyup.enter="updateMessage(row)"
+                ></el-input>
+              </div>
+            </template>
+          </el-table-column>
+          <el-table-column prop="title"> </el-table-column>
+          <el-table-column
+            prop="detail"
+            show-overflow-tooltip
+            width="320"
+          ></el-table-column>
+          <el-table-column
+            prop="reply"
+            show-overflow-tooltip
+            width="500"
+          ></el-table-column>
+          <el-table-column
+            prop="create_time"
+            width="180"
+            align="center"
+          ></el-table-column>
+          <el-table-column align="center">
+            <template #default="{ row }">
+              <el-button type="danger" @click="deleteMessage(row)"
+                >删除</el-button
+              >
+            </template>
+          </el-table-column>
+        </el-table>
+      </el-tab-pane>
+      <el-tab-pane :label="`举报(${state.report.length})`" name="second">
+        <template v-if="message === 'second'">
+          <el-table
+            :data="state.report"
+            :show-header="false"
+            style="width: 100%"
+            fit
+          >
+            <el-table-column>
+              <template #default="{ row }">
+                <span class="message-title">{{ row.title }}</span>
+              </template>
+            </el-table-column>
+            <el-table-column prop="detail" show-overflow-tooltip>
+            </el-table-column>
+            <el-table-column prop="request" show-overflow-tooltip>
+            </el-table-column>
+            <el-table-column
+              prop="create_time"
+              align="center"
+            ></el-table-column>
+            <el-table-column width="120" align="center">
+              <template #default="{ row }">
+                <el-button type="success" @click="handleDel(row)"
+                  >已阅</el-button
+                >
+              </template>
+            </el-table-column>
+          </el-table>
+          <div class="handle-row">
+            <el-button type="success" @click="handleAll">回复所有</el-button>
+          </div>
+        </template>
+      </el-tab-pane>
+    </el-tabs>
+  </div>
 </template>
 
 <script setup lang="ts" name="tabs">
-import { ref, reactive } from 'vue';
+import { fetchList, saveData } from "@/api/common";
+import { getMessageList } from "@/api/user";
+import { ref, reactive, onMounted, watch } from "vue";
 
-const message = ref('first');
+const expandedRowKeys = ref<string[]>([]);
+
+const remove = (array: any[], val: any) => {
+  const index = array.indexOf(val);
+  if (index > -1) {
+    array.splice(index, 1);
+    return true;
+  }
+  return false;
+};
+
+const expandOpen = async (row: any, expand: any) => {
+  if (!remove(expandedRowKeys.value, row.id)) {
+    expandedRowKeys.value.push(row.id);
+  }
+};
+const message = ref("first");
 const state = reactive({
-	unread: [
-		{
-			date: '2018-04-19 20:00:00',
-			title: '【系统通知】该系统将于今晚凌晨2点到5点进行升级维护'
-		},
-		{
-			date: '2018-04-19 21:00:00',
-			title: '今晚12点整发大红包，先到先得'
-		}
-	],
-	read: [
-		{
-			date: '2018-04-19 20:00:00',
-			title: '【系统通知】该系统将于今晚凌晨2点到5点进行升级维护'
-		}
-	],
-	recycle: [
-		{
-			date: '2018-04-19 20:00:00',
-			title: '【系统通知】该系统将于今晚凌晨2点到5点进行升级维护'
-		}
-	]
+  message: [],
+  report: [
+  ],
 });
 
-const handleRead = (index: number) => {
-	const item = state.unread.splice(index, 1);
-	state.read = item.concat(state.read);
+const updateMessage = (row: any) => {
+  saveData("/home/updateMessage", row).then((res: any) => {
+    if (res.code === 200) {
+      getMessage();
+    }
+  });
 };
-const handleDel = (index: number) => {
-	const item = state.read.splice(index, 1);
-	state.recycle = item.concat(state.recycle);
+
+const deleteMessage = (row: any) => {
+  saveData("/message/delete", row).then((res: any) => {
+    if (res.code === 200) {
+      getMessage();
+    }
+  });
 };
-const handleRestore = (index: number) => {
-	const item = state.recycle.splice(index, 1);
-	state.read = item.concat(state.read);
+const handleDel = (row: any) => {
+  row.request = "已阅";
+  saveData("/message/updateReport", row).then((res: any) => {
+    if (res.code === 200) {
+      getReport();
+    }
+  });
+};
+const handleAll = () => {
+  state.report.forEach((item: any) => {
+    item.request = "已阅";
+    saveData("/message/updateReport", item).then((res: any) => {
+      if (res.code === 200) {
+        getReport();
+      }
+    });
+  });
+};
+
+onMounted(() => {
+  getMessage();
+  getReport();
+});
+// 获取公告列表
+const getMessage = () => {
+  state.message = [];
+  fetchList("/home/getAllMessage", null).then((res: any) => {
+    Object.assign(state.message, res.data);
+  });
+};
+// 获取举报列表
+const getReport = () => {
+  state.report = [];
+  fetchList("/message/reportList", null).then((res: any) => {
+    Object.assign(state.report, res.data);
+  });
 };
 </script>
 
 <style>
 .message-title {
-	cursor: pointer;
+  cursor: pointer;
 }
 .handle-row {
-	margin-top: 30px;
+  margin-top: 30px;
 }
 </style>
