@@ -6,7 +6,11 @@
       :model="registerForm"
       ref="ruleForm"
       :rules="rules"
+<<<<<<< HEAD
       label-width="80"
+=======
+      label-width="80px"
+>>>>>>> 2day
       ><el-form-item> <h2 class="form_title title">创建账号</h2></el-form-item>
       <el-form-item label="用户名" prop="username">
         <el-input

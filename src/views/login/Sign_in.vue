@@ -4,7 +4,11 @@
     <el-form
       ref="loginForm"
       :model="loginFrom"
+<<<<<<< HEAD
       label-width="80"
+=======
+      label-width="80px"
+>>>>>>> 2day
       class="form"
       id="b-form"
     >
@@ -207,10 +211,18 @@ const submitForm = async () => {
     if (identifyCode.value === code.value) {
       let res = await login(username, password);
       if (res.code === 200) {
+<<<<<<< HEAD
         ElMessage.success("登录成功");
         localStorage.setItem("ms_username", username);
         const keys =
           permiss.defaultList[username == "9527" ? "admin" : "user"];
+=======
+        let data = res.data[0];
+        ElNotification.success("登录成功");
+        localStorage.setItem("ms_username", data.userName);
+        const keys =
+          permiss.defaultList[data.rank == "admin" ? "admin" : "user"];
+>>>>>>> 2day
         permiss.handleSet(keys);
         localStorage.setItem("ms_keys", JSON.stringify(keys));
         router.push("/");
@@ -245,7 +257,11 @@ watch(
     }
   }
 );
+<<<<<<< HEAD
 
+=======
+// 重置标签
+>>>>>>> 2day
 const tags = useTagsStore();
 tags.clearTags();
 

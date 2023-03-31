@@ -1,11 +1,20 @@
 <template>
+<<<<<<< HEAD
   <div class="container">
+=======
+  <el-container class="container">
+>>>>>>> 2day
     <el-aside width="850px">
       <div class="message-container" v-if="!showReport">
         <h2>留言板</h2>
         <el-form :model="form" label-position="right" label-width="80px">
+<<<<<<< HEAD
           <el-form-item label="标题" prop="name">
             <el-input v-model="form.name"></el-input>
+=======
+          <el-form-item label="标题" prop="name" required>
+            <el-input v-model="form.name" placeholder="请输入标题"></el-input>
+>>>>>>> 2day
           </el-form-item>
           <el-form-item label="留言内容" prop="message">
             <el-input
@@ -29,6 +38,10 @@
         class="report-form"
         v-if="showReport"
       >
+<<<<<<< HEAD
+=======
+        <h2>举报</h2>
+>>>>>>> 2day
         <el-form-item label="举报类型" prop="type">
           <el-radio-group v-model="formData.type">
             <el-radio-button label="垃圾广告"></el-radio-button>
@@ -57,6 +70,7 @@
       </div>
     </el-aside>
     <el-main>
+<<<<<<< HEAD
       <div class="notifications-container">
         <div class="success">
           <div class="flex">
@@ -93,10 +107,19 @@
       </div>
     </el-main>
   </div>
+=======
+      <Tip type="success" heading="什么是" content="厉害" />
+    </el-main>
+  </el-container>
+>>>>>>> 2day
 </template>
 
 <script setup lang="ts">
 import { reactive, ref } from "vue";
+<<<<<<< HEAD
+=======
+import Tip from "../components/tip.vue";
+>>>>>>> 2day
 
 interface Form {
   name: string;
@@ -163,7 +186,11 @@ function submitForm() {
 .message-container {
   max-width: 600px;
   margin: 0 auto;
+<<<<<<< HEAD
   padding: 100px 10px;
+=======
+  padding: 100px 10px 0;
+>>>>>>> 2day
 }
 
 .message-history {
@@ -176,6 +203,7 @@ h2 {
   text-align: center;
   margin-bottom: 20px;
 }
+<<<<<<< HEAD
 .notifications-container {
   width: 320px;
   height: auto;
@@ -256,4 +284,6 @@ h2 {
 .success-button-main:hover {
   background-color: #d1fae5;
 }
+=======
+>>>>>>> 2day
 </style>

@@ -1,6 +1,7 @@
 import { createRouter, createWebHashHistory, RouteRecordRaw } from "vue-router";
 import { usePermissStore } from "../store/permiss";
 import Home from "../views/home.vue";
+<<<<<<< HEAD
 
 const routes: RouteRecordRaw[] = [
   {
@@ -175,6 +176,11 @@ const routes: RouteRecordRaw[] = [
     component: () => import(/* webpackChunkName: "403" */ "../views/403.vue"),
   },
 ];
+=======
+import { adminRoutes } from "./routes";
+
+const routes: RouteRecordRaw[] = adminRoutes;
+>>>>>>> 2day
 
 const router = createRouter({
   history: createWebHashHistory(),

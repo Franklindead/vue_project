@@ -70,6 +70,10 @@
 import { computed } from "vue";
 import { useSidebarStore } from "../store/sidebar";
 import { useRoute } from "vue-router";
+<<<<<<< HEAD
+=======
+import { adminRoutes } from "../router/routes";
+>>>>>>> 2day
 
 const items = [
   {
@@ -102,12 +106,59 @@ const items = [
     ],
   },
   {
+<<<<<<< HEAD
+=======
+    icon: "Calendar",
+    index: "2",
+    title: "安全法规",
+    permiss: "2",
+    subs: [
+      {
+        index: "/national",
+        title: "国家法规",
+        permiss: "2",
+      },
+      {
+        index: "/place",
+        title: "地方法规",
+        permiss: "2",
+      },
+      {
+        index: "/school",
+        title: "校园法规",
+        permiss: "2",
+      },
+    ],
+  },
+  {
+>>>>>>> 2day
     icon: "DocumentCopy",
     index: "/tabs",
     title: "tab选项卡",
     permiss: "3",
   },
   {
+<<<<<<< HEAD
+=======
+    icon: "DocumentCopy",
+    index: "/appointment",
+    title: "预约申请",
+    permiss: "3",
+  },
+  {
+    icon: "DocumentCopy",
+    index: "/exam",
+    title: "测试与考核",
+    permiss: "3",
+  },
+  {
+    icon: "message",
+    index: "/message",
+    title: "留言/举报",
+    permiss: "3",
+  },
+  {
+>>>>>>> 2day
     icon: "Edit",
     index: "3",
     title: "表单相关",
